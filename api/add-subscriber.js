@@ -1,29 +1,32 @@
-const axios = require('axios');
+import axios from 'axios';
+
+const API_KEY = process.env.API_KEY;
 
 export default async (req, res) => {
-  if (req.method === 'POST') {
-    const { email, listId } = req.body;
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-    try {
-      const response = await axios.post(
-        'https://api.getresponse.com/v3/contacts',
-        {
-          email: email,
-          campaign: { campaignId: listId },
+  const { email, listId } = req.body;
+
+  try {
+    const response = await axios.post(
+      'https://api.getresponse.com/v3/contacts',
+      {
+        email: email,
+        campaign: { campaignId: listId },
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': `api-key ${API_KEY}`,
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Auth-Token': `api-key ${process.env.API_KEY}`,
-          },
-        }
-      );
+      }
+    );
 
-      res.json(response.data);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to add subscriber', details: error.message });
-    }
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error adding subscriber:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to add subscriber', details: error.message });
   }
 };
