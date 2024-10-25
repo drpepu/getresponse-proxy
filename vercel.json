@@ -1,9 +1,9 @@
 {
   "version": 2,
   "builds": [
-    { "src": "add-subscriber.js", "use": "@vercel/node" }
+    { "src": "api/add-subscriber.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "add-subscriber.js" }
+    { "src": "/api/add-subscriber", "dest": "api/add-subscriber.js" }
   ]
 }
